@@ -1,50 +1,294 @@
+// Custom Toast Notification System
+function showToast(message) {
+  // Create container if it doesn't exist
+  let container = document.querySelector('.toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+  }
+
+  // Create toast element
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  
+  // Icon
+  const icon = document.createElement('div');
+  icon.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
+  
+  // Message
+  const text = document.createElement('span');
+  text.innerText = message;
+
+  toast.appendChild(icon);
+  toast.appendChild(text);
+  container.appendChild(toast);
+
+  // Remove toast after 3 seconds
+  setTimeout(() => {
+    toast.classList.add('fade-out');
+    setTimeout(() => {
+      if(toast.parentNode) {
+        toast.parentNode.removeChild(toast);
+      }
+    }, 300); // Wait for animation to finish
+  }, 3000);
+}
+
+function formatPrice(price) {
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 0
+  }).format(price);
+}
+
 function addToCart(product, price) {
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-    let cart =
-    JSON.parse(localStorage.getItem("cart")) || [];
+  cart.push({
+      name: product,
+      price: price,
+      id: Date.now() // Unique ID for key tracking
+  });
 
-    cart.push({
-        name: product,
-        price: price
-    });
+  localStorage.setItem("cart", JSON.stringify(cart));
 
-    localStorage.setItem(
-        "cart",
-        JSON.stringify(cart)
-    );
-
-    alert(product + " added to cart!");
+  // Show premium toast notification instead of alert
+  showToast(product + " added to cart!");
 }
 
-if(document.getElementById("cartItems")) {
+function removeFromCart(id) {
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  cart = cart.filter(item => item.id !== id);
+  localStorage.setItem("cart", JSON.stringify(cart));
+  renderCart();
+  showToast("Item removed from cart");
+}
 
-    let cart =
-    JSON.parse(localStorage.getItem("cart")) || [];
+function renderCart() {
+  const list = document.getElementById("cartItems");
+  if (!list) return;
 
-    let list =
-    document.getElementById("cartItems");
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  let total = 0;
 
-    let total = 0;
+  // Clear current list
+  list.innerHTML = '';
 
-    cart.forEach(item => {
+  if (cart.length === 0) {
+    list.innerHTML = '<div class="empty-cart">Your cart is currently empty.</div>';
+    return;
+  }
 
-        let li =
-        document.createElement("li");
+  cart.forEach(item => {
+    let li = document.createElement("li");
+    
+    let nameSpan = document.createElement("span");
+    nameSpan.innerText = item.name;
+    
+    let priceDiv = document.createElement("div");
+    priceDiv.style.display = "flex";
+    priceDiv.style.alignItems = "center";
+    priceDiv.style.gap = "15px";
+    
+    let priceSpan = document.createElement("span");
+    priceSpan.innerText = formatPrice(item.price);
+    
+    let removeBtn = document.createElement("button");
+    removeBtn.innerHTML = "&times;";
+    removeBtn.style.background = "rgba(236, 72, 153, 0.1)";
+    removeBtn.style.color = "#ec4899";
+    removeBtn.style.border = "none";
+    removeBtn.style.borderRadius = "50%";
+    removeBtn.style.width = "28px";
+    removeBtn.style.height = "28px";
+    removeBtn.style.cursor = "pointer";
+    removeBtn.style.display = "flex";
+    removeBtn.style.alignItems = "center";
+    removeBtn.style.justifyContent = "center";
+    removeBtn.style.fontSize = "18px";
+    removeBtn.onclick = () => removeFromCart(item.id);
 
-        li.innerHTML =
-        item.name + " - Rs. " + item.price;
+    priceDiv.appendChild(priceSpan);
+    priceDiv.appendChild(removeBtn);
+    
+    li.appendChild(nameSpan);
+    li.appendChild(priceDiv);
 
-        list.appendChild(li);
+    list.appendChild(li);
 
-        total += item.price;
+    total += item.price;
+  });
 
+  let totalElement = document.createElement("div");
+  totalElement.className = "cart-total";
+  totalElement.innerHTML = `<span>Total:</span> <span>${formatPrice(total)}</span>`;
+
+  list.appendChild(totalElement);
+}
+
+// Run renderCart if we are on the cart page
+if (document.getElementById("cartItems")) {
+  renderCart();
+}
+
+// Search Functionality
+const searchInput = document.querySelector('.search');
+if (searchInput) {
+  searchInput.addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const productCards = document.querySelectorAll('.products .card');
+    
+    // If we are not on the products page, redirect to it with the search term
+    if (productCards.length === 0 && searchTerm.length > 0) {
+      // Allow pressing enter to search if not on products page
+      searchInput.addEventListener('keypress', function(k) {
+        if (k.key === 'Enter') {
+          window.location.href = `products.html?search=${encodeURIComponent(searchTerm)}`;
+        }
+      });
+      return;
+    }
+
+    let visibleCount = 0;
+
+    productCards.forEach(card => {
+      const productName = card.querySelector('h3').innerText.toLowerCase();
+      const productTags = card.getAttribute('data-tags') ? card.getAttribute('data-tags').toLowerCase() : '';
+      
+      if (productName.includes(searchTerm) || productTags.includes(searchTerm)) {
+        card.style.display = 'flex';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
     });
 
-    let totalElement =
-    document.createElement("h2");
+    // Handle 'No products found' state
+    let noResultsMsg = document.getElementById('no-results-msg');
+    const productsContainer = document.querySelector('.products');
+    
+    if (visibleCount === 0) {
+      if (!noResultsMsg) {
+        noResultsMsg = document.createElement('div');
+        noResultsMsg.id = 'no-results-msg';
+        noResultsMsg.style.gridColumn = '1 / -1';
+        noResultsMsg.style.textAlign = 'center';
+        noResultsMsg.style.padding = '40px';
+        noResultsMsg.style.fontSize = '20px';
+        noResultsMsg.style.color = 'var(--text-muted)';
+        productsContainer.appendChild(noResultsMsg);
+      }
+      noResultsMsg.innerText = `No products found matching "${searchTerm}".`;
+      noResultsMsg.style.display = 'block';
+    } else if (noResultsMsg) {
+      noResultsMsg.style.display = 'none';
+    }
+  });
 
-    totalElement.innerHTML =
-    "Total: Rs. " + total;
-
-    list.appendChild(totalElement);
+  // Check URL parameters on load for products page
+  const urlParams = new URLSearchParams(window.location.search);
+  const searchParam = urlParams.get('search');
+  if (searchParam) {
+    searchInput.value = searchParam;
+    // Trigger the input event to filter products immediately
+    searchInput.dispatchEvent(new Event('input'));
+  }
 }
+
+// Category Filtering Logic
+const categoryPills = document.querySelectorAll('.pill-card');
+const sidebarFilters = document.querySelectorAll('.filter-group li');
+const productCards = document.querySelectorAll('.products .card');
+const showingCount = document.getElementById('showing-count');
+
+function filterByCategory(category) {
+  let visibleCount = 0;
+  const searchTerm = category.toLowerCase();
+
+  // Update active state in sidebar
+  sidebarFilters.forEach(li => {
+    if (li.innerText.toLowerCase() === searchTerm) {
+      li.classList.add('active');
+    } else {
+      li.classList.remove('active');
+    }
+  });
+
+  // Filter products
+  productCards.forEach(card => {
+    const productTags = card.getAttribute('data-tags') ? card.getAttribute('data-tags').toLowerCase() : '';
+    
+    // Map UI categories to our data-tags
+    let match = false;
+    if (searchTerm === 'all') {
+      match = true;
+    } else if (searchTerm === 'electronics' && (productTags.includes('phone') || productTags.includes('laptop') || productTags.includes('watch') || productTags.includes('audio') || productTags.includes('gaming') || productTags.includes('camera'))) {
+      match = true;
+    } else if (searchTerm === 'clothing' && productTags.includes('cloth')) {
+      match = true;
+    } else if (searchTerm === 'home' && productTags.includes('home')) {
+      match = true;
+    } else if (searchTerm === 'books' && productTags.includes('book')) {
+      match = true;
+    } else if (searchTerm === 'sports' && productTags.includes('sport')) {
+      match = true;
+    } else if (searchTerm === 'beauty' && productTags.includes('beauty')) {
+      match = true;
+    } else if (searchTerm === 'toys' && productTags.includes('toy')) {
+      match = true;
+    }
+
+    if (match) {
+      card.style.display = 'flex';
+      visibleCount++;
+    } else {
+      card.style.display = 'none';
+    }
+  });
+
+  // Update count text
+  if (showingCount) {
+    showingCount.innerText = `Showing ${visibleCount} products`;
+  }
+
+  // Handle empty state
+  let noResultsMsg = document.getElementById('no-results-msg');
+  const productsContainer = document.querySelector('.products');
+  
+  if (visibleCount === 0) {
+    if (!noResultsMsg && productsContainer) {
+      noResultsMsg = document.createElement('div');
+      noResultsMsg.id = 'no-results-msg';
+      noResultsMsg.style.gridColumn = '1 / -1';
+      noResultsMsg.style.textAlign = 'center';
+      noResultsMsg.style.padding = '40px';
+      noResultsMsg.style.fontSize = '20px';
+      noResultsMsg.style.color = 'var(--text-muted)';
+      productsContainer.appendChild(noResultsMsg);
+    }
+    if(noResultsMsg) {
+      noResultsMsg.innerText = `No products found in "${category}".`;
+      noResultsMsg.style.display = 'block';
+    }
+  } else if (noResultsMsg) {
+    noResultsMsg.style.display = 'none';
+  }
+}
+
+// Add event listeners to category pills
+categoryPills.forEach(pill => {
+  pill.addEventListener('click', () => {
+    const category = pill.querySelector('span').innerText;
+    filterByCategory(category);
+  });
+});
+
+// Add event listeners to sidebar filters
+sidebarFilters.forEach(li => {
+  li.addEventListener('click', () => {
+    const category = li.innerText;
+    filterByCategory(category);
+  });
+});

@@ -1,32 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ShopWave Login</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShopWave | Premium Login</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<div class="login-container">
+  <div class="login-container">
+    <div class="login-box">
+      <div class="login-logo-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="url(#gradient)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+      </div>
+      <h2>Welcome back</h2>
+      <p class="login-subtitle">Sign in to your ShopWave account</p>
+      
+      <div class="input-group">
+        <label>Email *</label>
+        <input type="text" placeholder="name@example.com" aria-label="Email">
+      </div>
+      
+      <div class="input-group">
+        <label>Password *</label>
+        <input type="password" placeholder="••••••••" aria-label="Password">
+      </div>
+      
+      <button class="btn" onclick="window.location.href='home.html'">
+        Sign In →
+      </button>
 
-<div class="login-box">
+      <div class="demo-creds">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        Demo: demo@shopwave.com / demo123
+      </div>
 
-<h1><h1>&#128722; ShopWave</h1></h1>
+      <div class="signup-link">
+        No account? <a href="#">Sign up</a>
+      </div>
+    </div>
+  </div>
 
-<h2>Login</h2>
-
-<input type="text" placeholder="Username">
-
-<input type="password" placeholder="Password">
-
-<button onclick="window.location.href='home.html'">
-Login
-</button>
-
-</div>
-
-</div>
-
+  <script src="script.js"></script>
 </body>
 </html>
