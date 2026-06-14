@@ -36,10 +36,186 @@
   <h1 class="section-title">Your Shopping Cart</h1>
 
   <div class="cart-container">
-    <div class="cart-card">
+    <div class="cart-card" id="cartCard">
       <ul id="cartItems">
         <!-- Cart items will be loaded here dynamically -->
       </ul>
+      
+      <!-- Coupon Application Section -->
+      <div class="coupon-section" id="couponSection" style="display: none;">
+        <input type="text" id="couponCode" placeholder="Enter coupon (SHOPWAVE20)">
+        <button onclick="applyCouponCode()">Apply Coupon</button>
+      </div>
+      <div id="couponMessage"></div>
+
+      <!-- Checkout Button -->
+      <button id="checkoutBtn" class="btn" style="width: 100%; margin-top: 20px; display: none;" onclick="startCheckoutWizard()">
+        Proceed to Checkout →
+      </button>
+
+      <!-- Checkout Wizard -->
+      <div class="checkout-wizard" id="checkoutWizard">
+        <div class="wizard-steps">
+          <div class="wizard-step-line" id="wizardStepLine"></div>
+          <div class="wizard-step active" id="stepIndicator1">
+            <div class="step-num">1</div>
+            <div class="step-label">Shipping</div>
+          </div>
+          <div class="wizard-step" id="stepIndicator2">
+            <div class="step-num">2</div>
+            <div class="step-label">Payment</div>
+          </div>
+          <div class="wizard-step" id="stepIndicator3">
+            <div class="step-num">3</div>
+            <div class="step-label">Tracking</div>
+          </div>
+        </div>
+
+        <!-- Step 1 Panel: Shipping -->
+        <div class="wizard-panel active" id="panelShipping">
+          <h3 style="margin-bottom: 20px;">Shipping Details</h3>
+          <form onsubmit="submitShippingDetails(event)">
+            <div class="form-group">
+              <label>Full Name *</label>
+              <input type="text" id="shipName" required placeholder="John Doe">
+            </div>
+            <div class="form-group">
+              <label>Shipping Address *</label>
+              <textarea id="shipAddress" required placeholder="123 Main St, Apt 4B, Bangalore, KA" style="height: 70px; resize: none; width:100%; border-radius:8px; background:var(--surface); border:1px solid var(--border); color:white; padding:12px; font-family:inherit;"></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>City *</label>
+                <input type="text" id="shipCity" required placeholder="Bangalore">
+              </div>
+              <div class="form-group">
+                <label>ZIP / Postal Code *</label>
+                <input type="text" id="shipZip" required placeholder="560001">
+              </div>
+            </div>
+            <button type="submit" class="btn" style="width: 100%; margin-top: 15px;">Continue to Payment →</button>
+          </form>
+        </div>
+
+        <!-- Step 2 Panel: Payment -->
+        <div class="wizard-panel" id="panelPayment">
+          <h3 style="margin-bottom: 20px; text-align: center;">Secure Credit Card Payment</h3>
+          
+          <!-- 3D Flipping Card -->
+          <div class="credit-card-scene">
+            <div class="credit-card-inner" id="creditCardInner">
+              <div class="credit-card-front">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div class="card-chip"></div>
+                  <div class="card-logo">ShopWave</div>
+                </div>
+                <div class="card-number-display" id="cardNumDisplay">•••• •••• •••• ••••</div>
+                <div class="card-holder-info">
+                  <div>
+                    <div class="card-holder-label">Card Holder</div>
+                    <div class="card-holder-name" id="cardNameDisplay">YOUR NAME</div>
+                  </div>
+                  <div style="text-align: right;">
+                    <div class="card-holder-label">Expires</div>
+                    <div class="card-expiry-val" id="cardExpiryDisplay">MM/YY</div>
+                  </div>
+                </div>
+              </div>
+              <div class="credit-card-back">
+                <div class="card-black-bar"></div>
+                <div class="card-cvv-section">
+                  <div class="card-cvv-label">CVV</div>
+                  <div class="card-cvv-bar" id="cardCvvDisplay">•••</div>
+                </div>
+                <div style="padding: 10px 24px; font-size: 8px; text-transform: uppercase; text-align: center; color: rgba(255,255,255,0.4);">
+                  Authorized Signature • Not Transferable
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <form onsubmit="submitPaymentDetails(event)">
+            <div class="form-group">
+              <label>Cardholder Name *</label>
+              <input type="text" id="payName" required placeholder="John Doe" oninput="updateCardName(this.value)">
+            </div>
+            <div class="form-group">
+              <label>Card Number *</label>
+              <input type="text" id="payNumber" required placeholder="4111 2222 3333 4444" maxlength="19" oninput="updateCardNumber(this.value)">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Expiry Date *</label>
+                <input type="text" id="payExpiry" required placeholder="MM/YY" maxlength="5" oninput="updateCardExpiry(this.value)">
+              </div>
+              <div class="form-group">
+                <label>CVV *</label>
+                <input type="text" id="payCvv" required placeholder="123" maxlength="3" onfocus="flipCard(true)" onblur="flipCard(false)" oninput="updateCardCvv(this.value)">
+              </div>
+            </div>
+            <button type="submit" class="btn" style="width: 100%; margin-top: 15px;">Pay Now & Confirm Order</button>
+          </form>
+        </div>
+
+        <!-- Step 3 Panel: Live Tracking -->
+        <div class="wizard-panel" id="panelTracking">
+          <div class="live-order-tracker">
+            <div class="tracker-status-bar" id="trackerStatusBar">Processing Order...</div>
+            <div class="tracker-timeline">
+              <div class="timeline-item active" id="timeStep1">
+                <div class="timeline-dot"></div>
+                <div class="timeline-title">Order Placed</div>
+                <div class="timeline-desc">Your order is being reviewed by our checkout engine.</div>
+              </div>
+              <div class="timeline-item" id="timeStep2">
+                <div class="timeline-dot"></div>
+                <div class="timeline-title">Preparing for Shipment</div>
+                <div class="timeline-desc">ShopWave logistics is packing your order at our Bangalore warehouse.</div>
+              </div>
+              <div class="timeline-item" id="timeStep3">
+                <div class="timeline-dot"></div>
+                <div class="timeline-title">Dispatched & En Route</div>
+                <div class="timeline-desc">Your package is en route with express delivery services.</div>
+              </div>
+              <div class="timeline-item" id="timeStep4">
+                <div class="timeline-dot"></div>
+                <div class="timeline-title">Out for Delivery</div>
+                <div class="timeline-desc">A delivery agent will contact you shortly to complete the drop-off.</div>
+              </div>
+            </div>
+            <button class="btn" style="margin-top: 20px; width: 100%;" onclick="window.location.href='products.html'">Continue Shopping</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activity Ticker -->
+  <div class="activity-ticker-container" id="activityTicker"></div>
+
+  <!-- Floating AI Support Chatbot -->
+  <div class="chatbot-bubble" id="chatBubble" onclick="toggleChatbot()">💬</div>
+  <div class="chatbot-container" id="chatContainer">
+    <div class="chatbot-header">
+      <div class="chatbot-title">
+        <span class="chatbot-status"></span>
+        <span>ShopWave Live Assistant</span>
+      </div>
+      <button class="chatbot-close" onclick="toggleChatbot()">&times;</button>
+    </div>
+    <div class="chatbot-messages" id="chatMessages">
+      <div class="chat-msg bot">
+        Hi there! Welcome to ShopWave Support. How can I help you today?
+      </div>
+    </div>
+    <div class="chatbot-input-area">
+      <input type="text" id="chatInput" placeholder="Ask about products, orders, discounts..." onkeypress="handleChatKeyPress(event)">
+      <button onclick="sendChatMessage()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
     </div>
   </div>
 

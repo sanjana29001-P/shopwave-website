@@ -55,6 +55,35 @@
     </div>
   </div>
 
+  <!-- Activity Ticker -->
+  <div class="activity-ticker-container" id="activityTicker"></div>
+
+  <!-- Floating AI Support Chatbot -->
+  <div class="chatbot-bubble" id="chatBubble" onclick="toggleChatbot()">💬</div>
+  <div class="chatbot-container" id="chatContainer">
+    <div class="chatbot-header">
+      <div class="chatbot-title">
+        <span class="chatbot-status"></span>
+        <span>ShopWave Live Assistant</span>
+      </div>
+      <button class="chatbot-close" onclick="toggleChatbot()">&times;</button>
+    </div>
+    <div class="chatbot-messages" id="chatMessages">
+      <div class="chat-msg bot">
+        Hi there! Welcome to ShopWave Support. How can I help you today?
+      </div>
+    </div>
+    <div class="chatbot-input-area">
+      <input type="text" id="chatInput" placeholder="Ask about products, orders, discounts..." onkeypress="handleChatKeyPress(event)">
+      <button onclick="sendChatMessage()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>

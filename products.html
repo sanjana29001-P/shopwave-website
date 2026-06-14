@@ -94,6 +94,19 @@
       <!-- Products Grid Area -->
       <div class="products-grid-container">
         
+        <!-- Flash Sale Banner -->
+        <div class="flash-sale-banner" id="flashSaleBanner">
+          <h3>⚡ Flash Sale Active! 20% Off Books & Electronics</h3>
+          <div class="countdown">
+            <span>Ending in:</span>
+            <div class="countdown-time" id="countdown-hours">02</div>
+            <span>:</span>
+            <div class="countdown-time" id="countdown-minutes">45</div>
+            <span>:</span>
+            <div class="countdown-time" id="countdown-seconds">00</div>
+          </div>
+        </div>
+
         <div class="products-header">
           <div>
             <h2>Featured Products</h2>
@@ -123,12 +136,51 @@
             </div>
           </div>
 
-          <div class="card" data-tags="laptop computer pc macbook apple mac">
-            <div class="img-placeholder">💻</div>
+          <div class="card" data-tags="book books reading code programming developer development" onclick="openProductModal('The Pragmatic Programmer', 1499, '📘', 'book')">
+            <div class="img-placeholder">📘</div>
             <div class="card-content">
-              <h3>MacBook Pro M3</h3>
-              <p>₹1,69,900</p>
-              <button onclick="addToCart('MacBook Pro M3', 169900)">Add To Cart</button>
+              <h3>The Pragmatic Programmer</h3>
+              <div class="price-container">
+                <span class="original-price">₹1,999</span>
+                <p>₹1,499</p>
+              </div>
+              <button onclick="addToCart('The Pragmatic Programmer', 1499); event.stopPropagation();">Add To Cart</button>
+            </div>
+          </div>
+
+          <div class="card" data-tags="book books reading code programming javascript web developer" onclick="openProductModal('Eloquent JavaScript', 1299, '📙', 'book')">
+            <div class="img-placeholder">📙</div>
+            <div class="card-content">
+              <h3>Eloquent JavaScript</h3>
+              <div class="price-container">
+                <span class="original-price">₹1,699</span>
+                <p>₹1,299</p>
+              </div>
+              <button onclick="addToCart('Eloquent JavaScript', 1299); event.stopPropagation();">Add To Cart</button>
+            </div>
+          </div>
+
+          <div class="card" data-tags="book books reading self-help productivity growth habits" onclick="openProductModal('Atomic Habits', 799, '📗', 'book')">
+            <div class="img-placeholder">📗</div>
+            <div class="card-content">
+              <h3>Atomic Habits</h3>
+              <div class="price-container">
+                <span class="original-price">₹999</span>
+                <p>₹799</p>
+              </div>
+              <button onclick="addToCart('Atomic Habits', 799); event.stopPropagation();">Add To Cart</button>
+            </div>
+          </div>
+
+          <div class="card" data-tags="book books reading code programming software quality architecture" onclick="openProductModal('Clean Code', 1699, '📚', 'book')">
+            <div class="img-placeholder">📚</div>
+            <div class="card-content">
+              <h3>Clean Code</h3>
+              <div class="price-container">
+                <span class="original-price">₹2,199</span>
+                <p>₹1,699</p>
+              </div>
+              <button onclick="addToCart('Clean Code', 1699); event.stopPropagation();">Add To Cart</button>
             </div>
           </div>
 
@@ -295,6 +347,97 @@
       </div>
     </div>
 
+  </div>
+
+  <!-- Product Details Modal -->
+  <div class="modal-overlay" id="productModal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 id="modalProductCategory">Electronics</h3>
+        <button class="modal-close" onclick="closeProductModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-img-placeholder" id="modalProductIcon">📱</div>
+        <div class="modal-info">
+          <h2 id="modalProductName">Product Name</h2>
+          <div class="modal-price" id="modalProductPrice">₹0</div>
+          <p class="modal-desc" id="modalProductDesc">Detailed description of this premium product goes here. Experience high-quality manufacturing and state-of-the-art engineering.</p>
+          <div class="modal-meta">
+            <div class="modal-meta-item">
+              <span>Availability:</span>
+              <span><strong id="modalProductStock" style="color: #34d399;">In Stock (8 units left)</strong></span>
+            </div>
+            <div class="modal-meta-item">
+              <span>Viewers:</span>
+              <span><strong id="modalProductViewers" style="color: #38bdf8;">14 people watching</strong></span>
+            </div>
+          </div>
+          <button class="modal-buy-btn" id="modalAddToCartBtn">Add to Cart</button>
+        </div>
+        <div class="modal-reviews-section">
+          <div class="reviews-header">
+            <h3>Customer Reviews</h3>
+            <span id="reviewsAverage" style="color: #fbbf24; font-weight: 700;">⭐ 4.8 / 5</span>
+          </div>
+          <div class="reviews-list" id="modalReviewsList">
+            <!-- Reviews will be loaded dynamically -->
+          </div>
+          <form class="add-review-form" onsubmit="submitProductReview(event)">
+            <h4>Write a Customer Review</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Your Name *</label>
+                <input type="text" id="reviewAuthor" required placeholder="Jane Doe">
+              </div>
+              <div class="form-group">
+                <label>Rating *</label>
+                <select id="reviewRating" required>
+                  <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                  <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                  <option value="3">⭐⭐⭐ (3/5)</option>
+                  <option value="2">⭐⭐ (2/5)</option>
+                  <option value="1">⭐ (1/5)</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Review details *</label>
+              <textarea id="reviewText" required placeholder="What did you think of this product?"></textarea>
+            </div>
+            <button type="submit">Submit Review</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activity Ticker -->
+  <div class="activity-ticker-container" id="activityTicker"></div>
+
+  <!-- Floating AI Support Chatbot -->
+  <div class="chatbot-bubble" id="chatBubble" onclick="toggleChatbot()">💬</div>
+  <div class="chatbot-container" id="chatContainer">
+    <div class="chatbot-header">
+      <div class="chatbot-title">
+        <span class="chatbot-status"></span>
+        <span>ShopWave Live Assistant</span>
+      </div>
+      <button class="chatbot-close" onclick="toggleChatbot()">&times;</button>
+    </div>
+    <div class="chatbot-messages" id="chatMessages">
+      <div class="chat-msg bot">
+        Hi there! Welcome to ShopWave Support. How can I help you today?
+      </div>
+    </div>
+    <div class="chatbot-input-area">
+      <input type="text" id="chatInput" placeholder="Ask about products, orders, discounts..." onkeypress="handleChatKeyPress(event)">
+      <button onclick="sendChatMessage()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
   </div>
 
   <script src="script.js"></script>
